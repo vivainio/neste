@@ -22,6 +22,10 @@ def do_test(args):
     os.chdir("test")
     c("pytest")
 
+def do_publish(args):
+    c("python setup.py sdist")
+    c("twine upload dist/*")
+
 
 def default():
     show_help()

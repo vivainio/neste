@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-setup(name='neste',
+setup(name='neste-braces',
       version='1.0.0',
       description='Desciption for neste here',
       author='Ville M. Vainio',

@@ -2,7 +2,8 @@ import re,sys
 
 
 def render(cont: str):
-    tokens = re.split("([\{\(\}\)\[\];])",cont)
+    error = False
+    tokens = re.split(r"([\{\(\}\)\[\];\n])",cont)
     tokens = [t.strip() for t in tokens if t.strip()]
     indent = 0
 
@@ -13,16 +14,15 @@ def render(cont: str):
         "[" : "]"
     }
 
-    braces = set()
-
-    braces.update(enders.keys())
-    braces.update(enders.values())
-
     # simplify round, merge () and single ;
 
     for i,t in enumerate(tokens):
         if not t:
             continue
+        # last char would be index out of range
+        if i == len(tokens) - 1:
+            break
+        
         if t in enders and tokens[i+1] == enders[t]:
             tokens[i] = t + tokens[i+1]
             tokens[i+1] = None
@@ -40,7 +40,7 @@ def render(cont: str):
             continue
 
         brace = t.strip(" ;")
-        if brace == "}" or brace == ")":
+        if brace == "}" or brace == ")" or brace == ']':
             indent -= 1
             got = stack.pop()
             expected = enders[got]
@@ -50,14 +50,25 @@ def render(cont: str):
 
         print(indent * "  " + t)
 
-        if brace == "{" or brace == "(":
+        if brace == "{" or brace == "(" or brace == "[":
             indent += 1
             stack.append(brace)
 
+    if stack:
+        print("Stack was not empty in the end:", stack)
+        error = True
+
+    return error
         
-def main():        
-    cont = open(sys.argv[1]).read()
-    render(cont)
+def main():
+    if len(sys.argv) == 1:
+        cont = input()
+    else:
+        cont = open(sys.argv[1]).read()
+    err = render(cont)
+    # broken syntax, return error
+    if err:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
