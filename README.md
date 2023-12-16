@@ -55,6 +55,14 @@ $ neste foo.txt
 
 ```
 
+Or
+
+```
+neste
+```
+
+(and then you type your expression and press enter)
+
 # License
 
 MIT
