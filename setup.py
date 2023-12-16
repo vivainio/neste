@@ -10,7 +10,8 @@ setup(name='neste-braces',
       install_requires=[],
       entry_points = {
         'console_scripts': [
-            'neste = neste.neste:main'
+            'neste = neste.neste:main',
+            'tnex = neste.tnex_cli:main'
         ]
       }
      )

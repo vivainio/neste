@@ -1,38 +1,38 @@
-import re,sys
+import re, sys
+
+
+def tokenize(s: str):
+    tokens = re.split(r"([\{\(\}\)\[\];\n])", s)
+    tokens = [t.strip() for t in tokens if t.strip()]
+    return tokens
 
 
 def render(cont: str):
     error = False
-    tokens = re.split(r"([\{\(\}\)\[\];\n])",cont)
-    tokens = [t.strip() for t in tokens if t.strip()]
+    tokens = tokenize(cont)
     indent = 0
 
     stack = []
-    enders = {
-        "{" : "}",
-        "(" : ")",
-        "[" : "]"
-    }
+    enders = {"{": "}", "(": ")", "[": "]"}
 
     # simplify round, merge () and single ;
 
-    for i,t in enumerate(tokens):
+    for i, t in enumerate(tokens):
         if not t:
             continue
         # last char would be index out of range
         if i == len(tokens) - 1:
             break
-        
-        if t in enders and tokens[i+1] == enders[t]:
-            tokens[i] = t + tokens[i+1]
-            tokens[i+1] = None
-        if t == ";" and tokens[i-1] and ";" not in tokens[i-1]:
+
+        if t in enders and tokens[i + 1] == enders[t]:
+            tokens[i] = t + tokens[i + 1]
+            tokens[i + 1] = None
+        if t == ";" and tokens[i - 1] and ";" not in tokens[i - 1]:
             tokens[i] = None
-            tokens[i-1] = tokens[i-1]+" ;"
+            tokens[i - 1] = tokens[i - 1] + " ;"
 
     # remove nones
     tokens = [t for t in tokens if t]
-
 
     for t in tokens:
         t = t.strip()
@@ -40,13 +40,12 @@ def render(cont: str):
             continue
 
         brace = t.strip(" ;")
-        if brace == "}" or brace == ")" or brace == ']':
+        if brace == "}" or brace == ")" or brace == "]":
             indent -= 1
             got = stack.pop()
             expected = enders[got]
             if brace != expected:
                 print("ERROR: Expected", expected, "got", t)
-
 
         print(indent * "  " + t)
 
@@ -59,7 +58,8 @@ def render(cont: str):
         error = True
 
     return error
-        
+
+
 def main():
     if len(sys.argv) == 1:
         cont = input()
@@ -69,6 +69,7 @@ def main():
     # broken syntax, return error
     if err:
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
